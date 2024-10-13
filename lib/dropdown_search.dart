@@ -167,6 +167,9 @@ class DropdownSearch<T> extends StatefulWidget {
 
   final Mode mode;
 
+  // a function that runs on tap to selected item
+  final void Function(T item)? onSelectedItemTap;
+
   DropdownSearch({
     super.key,
     T? selectedItem,
@@ -188,6 +191,7 @@ class DropdownSearch<T> extends StatefulWidget {
     this.onSaved,
     this.validator,
     DropDownDecoratorProps? decoratorProps,
+    this.onSelectedItemTap,
   })  : assert(
           T == String || T == int || T == double || compareFn != null,
           '`compareFn` is required',
@@ -235,6 +239,7 @@ class DropdownSearch<T> extends StatefulWidget {
     FormFieldSetter<List<T>>? onSaved,
     FormFieldValidator<List<T>>? validator,
     DropDownDecoratorProps? decoratorProps,
+    this.onSelectedItemTap,
   })  : assert(
           T == String || T == int || T == double || compareFn != null,
           '`compareFn` is required',
@@ -328,34 +333,39 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
 
   Widget _defaultSelectedItemWidget() {
     Widget defaultItemMultiSelectionMode(T item) {
-      return Container(
-        padding: EdgeInsets.only(left: 8, right: 1),
-        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 1),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).primaryColorLight,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              _itemAsString(item),
-              style: Theme.of(context).textTheme.titleSmall,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Padding(padding: EdgeInsets.only(left: 8)),
-            SizedBox(
-              width: 32,
-              height: 32,
-              child: IconButton(
-                iconSize: 20,
-                padding: EdgeInsets.zero,
-                icon: Icon(Icons.close_outlined, size: 20),
-                onPressed: () => removeItem(item),
+      return GestureDetector(
+        onTap: () => widget.onSelectedItemTap != null
+            ? widget.onSelectedItemTap!(item)
+            : null,
+        child: Container(
+          padding: EdgeInsets.only(left: 8, right: 1),
+          margin: EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Theme.of(context).primaryColorLight,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                _itemAsString(item),
+                style: Theme.of(context).textTheme.titleSmall,
+                overflow: TextOverflow.ellipsis,
               ),
-            )
-          ],
+              Padding(padding: EdgeInsets.only(left: 8)),
+              SizedBox(
+                width: 32,
+                height: 32,
+                child: IconButton(
+                  iconSize: 20,
+                  padding: EdgeInsets.zero,
+                  icon: Icon(Icons.close_outlined, size: 20),
+                  onPressed: () => removeItem(item),
+                ),
+              )
+            ],
+          ),
         ),
       );
     }
