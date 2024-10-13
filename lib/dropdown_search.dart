@@ -170,6 +170,9 @@ class DropdownSearch<T> extends StatefulWidget {
   // a function that runs on tap to selected item
   final void Function(T item)? onSelectedItemTap;
 
+  // a function that runs on selected item removal
+  final void Function(T item)? onSelectedItemRemove;
+
   DropdownSearch({
     super.key,
     T? selectedItem,
@@ -192,6 +195,7 @@ class DropdownSearch<T> extends StatefulWidget {
     this.validator,
     DropDownDecoratorProps? decoratorProps,
     this.onSelectedItemTap,
+    this.onSelectedItemRemove,
   })  : assert(
           T == String || T == int || T == double || compareFn != null,
           '`compareFn` is required',
@@ -240,6 +244,7 @@ class DropdownSearch<T> extends StatefulWidget {
     FormFieldValidator<List<T>>? validator,
     DropDownDecoratorProps? decoratorProps,
     this.onSelectedItemTap,
+    this.onSelectedItemRemove,
   })  : assert(
           T == String || T == int || T == double || compareFn != null,
           '`compareFn` is required',
@@ -361,7 +366,9 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
                   iconSize: 20,
                   padding: EdgeInsets.zero,
                   icon: Icon(Icons.close_outlined, size: 20),
-                  onPressed: () => removeItem(item),
+                  onPressed: () => widget.onSelectedItemRemove != null
+                      ? widget.onSelectedItemRemove!(item)
+                      : removeItem(item),
                 ),
               )
             ],
